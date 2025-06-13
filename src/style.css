@@ -1,7 +1,9 @@
 .slidezy-wrapper {
-    position: relative;
     width: 100%;
     overflow: hidden;
+}
+.slidezy-content {
+    position: relative;
 }
 .slidezy-track {
     display: flex;
@@ -26,4 +28,20 @@
 }
 .slidezy-next {
     right: 10px
+}
+.dots-wrapper{
+    display: flex;
+    gap: 5px;
+    margin: 10px;
+}
+.slidezy-dot {
+    padding: 4px 14px;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    border-radius: 5px;
+    border: 1px solid gray;
+}
+.slidezy-dot.active {
+    transform: scale(1.2);
+    background: gray
 }
