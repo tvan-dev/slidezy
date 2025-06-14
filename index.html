@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slidezy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="./src/style.css">
     <link rel="stylesheet" href="./assest/main.css">
 </head>
@@ -17,14 +17,21 @@
         <div>Slide 5</div>
         <div>Slide 6</div>
     </div>
-
+    <div id="my-navigation">
+        <button class="btn-previous">Prev</button>
+        <button class="btn-next">Next</button>
+    </div>
     <script src="./src/main.js"></script>
     <script>
         const mySlider = new Slidezy("#my-slider", {
             items : 3,
             loop: true,
             speed: 300,
-            navigation: true
+            navigation: true,
+            preBtn: "btn-previous",
+            nextBtn: "btn-next",
+            autoPlay: true,
+            slideBy: "page",
         })
     </script>
 </body>

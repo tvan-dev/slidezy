@@ -15,13 +15,14 @@
 
 .slidezy-pre,
 .slidezy-next {
+    
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    border: none;
-    outline: none;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    padding: 3px 10px;
+    color: rgba(0, 0, 0, 0.8);
+
 }
 .slidezy-pre {
     left: 10px;

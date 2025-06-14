@@ -9,11 +9,17 @@ function Slidezy (selector, options ={}) {
         loop: false,
         speed: 300,
         navigation: false,
+        preBtn: null,
+        nextBtn: null,
+        autoPlay: false,
+        slideBy: 1,
+        controls: true,
+        controlsValues: ["<", ">"]
     }, options)
 
     this.slides = Array.from(this.container.children)
     this.currentIndex = this.opt.loop ? this.opt.items : 0;
-    
+    this.realStep = this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
     this.init()
     this._updatePosition()
 }
@@ -23,8 +29,13 @@ Slidezy.prototype.init = function () {
 
     this._createContent()
     this._createTrack()
-    this._createControls()
-    this._createNavigation()
+    if(this.opt.controls) {
+        this._createControls()
+    }
+    if(this.opt.navigation) {
+        this._createNavigation()
+    }
+    this.autoPlay()
 }
 
 Slidezy.prototype._createContent = function () {
@@ -57,19 +68,35 @@ Slidezy.prototype._createTrack = function () {
 }
 
 Slidezy.prototype._createControls = function () {
-    this.preBtn = document.createElement("button");
-    this.nextBtn = document.createElement("button");
+    this.preBtn = this.opt.preBtn
+    ? document.querySelector(`.${this.opt.preBtn}`)
+    :document.createElement("button");
+    this.nextBtn = this.opt.nextBtn
+    ? document.querySelector(`.${this.opt.nextBtn}`)
+    :document.createElement("button");
 
+    if(!this.opt.preBtn) {
     this.preBtn.className = "slidezy-pre"
+    this.preBtn.innerHTML = this.opt.controlsValues[0];
+    this.content.appendChild(this.preBtn);
+    }
+
+    if(!this.opt.nextBtn) {
     this.nextBtn.className = "slidezy-next"
+    this.nextBtn.innerHTML = this.opt.controlsValues[1];
+    this.content.appendChild(this.nextBtn);
+    }
 
-    this.preBtn.innerText = "<";
-    this.nextBtn.innerText = ">";
 
-    this.content.append(this.preBtn, this.nextBtn);
-
-    this.preBtn.onclick = () => this.moveSlide(-1);
-    this.nextBtn.onclick = () => this.moveSlide(1);
+    this.preBtn.onclick = () => this.moveSlide(-this.realStep);
+    this.nextBtn.onclick = () => this.moveSlide(this.realStep);
+}
+Slidezy.prototype.autoPlay = function () {
+    if(this.opt.autoPlay) {
+        setInterval(() => {
+            this.moveSlide(this.realStep);
+        }, 5000)
+    }
 }
 
 Slidezy.prototype.moveSlide = function (step) {
