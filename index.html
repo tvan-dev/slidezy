@@ -24,14 +24,13 @@
     <script src="./src/main.js"></script>
     <script>
         const mySlider = new Slidezy("#my-slider", {
-            items : 3,
+            items : 2,
             loop: true,
             speed: 300,
             navigation: true,
-            preBtn: "btn-previous",
-            nextBtn: "btn-next",
-            autoPlay: true,
-            slideBy: "page",
+            // autoPlay: true,
+            autoPlayTimeOut: 1000,
+            slideBy: 3,
         })
     </script>
 </body>

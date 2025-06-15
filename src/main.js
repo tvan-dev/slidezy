@@ -12,6 +12,8 @@ function Slidezy (selector, options ={}) {
         preBtn: null,
         nextBtn: null,
         autoPlay: false,
+        autoPlayTimeOut: 3000,
+        autoPlayPauseOnHover: true,
         slideBy: 1,
         controls: true,
         controlsValues: ["<", ">"]
@@ -20,6 +22,7 @@ function Slidezy (selector, options ={}) {
     this.slides = Array.from(this.container.children)
     this.currentIndex = this.opt.loop ? this.opt.items : 0;
     this.realStep = this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
+    this.cloneItems = this.opt.items + this.opt.slideBy
     this.init()
     this._updatePosition()
 }
@@ -35,7 +38,14 @@ Slidezy.prototype.init = function () {
     if(this.opt.navigation) {
         this._createNavigation()
     }
-    this.autoPlay()
+    if(this.opt.autoPlay) {
+        this._autoPlay();
+
+        if(this.opt.autoPlayPauseOnHover) {
+            this.container.onmouseover = () => this._stopAutoPlay();
+            this.container.onmouseleave = () => this._autoPlay();
+        }
+    }
 }
 
 Slidezy.prototype._createContent = function () {
@@ -57,6 +67,7 @@ Slidezy.prototype._createTrack = function () {
             .map(slide=> slide.cloneNode(true));
 
         this.slides = slideHead.concat(this.slides.concat(slideTail));
+        console.log(this.slides.length);
     }
 
     this.slides.forEach(slide => {
@@ -91,14 +102,17 @@ Slidezy.prototype._createControls = function () {
     this.preBtn.onclick = () => this.moveSlide(-this.realStep);
     this.nextBtn.onclick = () => this.moveSlide(this.realStep);
 }
-Slidezy.prototype.autoPlay = function () {
-    if(this.opt.autoPlay) {
-        setInterval(() => {
-            this.moveSlide(this.realStep);
-        }, 5000)
-    }
-}
+Slidezy.prototype._autoPlay = function () {
+    if(this.autoPlayTimer) return;
 
+    this.autoPlayTimer = setInterval(() => {
+        this.moveSlide(this.realStep);
+    }, this.opt.autoPlayTimeOut);
+}
+Slidezy.prototype._stopAutoPlay = function () {
+    clearInterval(this.autoPlayTimer);
+    this.autoPlayTimer = null;
+}
 Slidezy.prototype.moveSlide = function (step) {
     if(this._isAnimating) return;
     this._isAnimating = true;
@@ -108,13 +122,14 @@ Slidezy.prototype.moveSlide = function (step) {
 
     setTimeout(() => {                
             if(this.opt.loop) {
-            if(this.currentIndex <=0 ) {
-                this.currentIndex = maxIndex - this.opt.items;
+                const slideCount = this._getSlideCount();
+            if(this.currentIndex < this.opt.items ) {
+                this.currentIndex += slideCount
                 this._updatePosition(true);
 
             }
-            else if(this.currentIndex >= maxIndex) {
-                this.currentIndex = this.opt.items;
+            else if(this.currentIndex > slideCount) {
+                this.currentIndex -= slideCount
                 this._updatePosition(true);
             }
         }
@@ -124,7 +139,9 @@ Slidezy.prototype.moveSlide = function (step) {
 
     this._updatePosition();
 }
-
+Slidezy.prototype._getSlideCount = function () {
+     return this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+}
 Slidezy.prototype._updateNav = function () {
     let realIndex = this.currentIndex;
     if(this.opt.loop) {
@@ -156,7 +173,7 @@ Slidezy.prototype._createNavigation = function () {
     this._dotsWrapper = document.createElement("div");
     this._dotsWrapper.className = "dots-wrapper";
 
-    const countSlides = this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+    const countSlides = this._getSlideCount()
     const page = Math.ceil(countSlides / this.opt.items);
 
     for (let i = 0; i < page; i++ ) {
