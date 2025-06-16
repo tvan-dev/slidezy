@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 .slidezy-wrapper {
     width: 100%;
     overflow: hidden;
@@ -8,10 +19,12 @@
 .slidezy-track {
     display: flex;
 }
-
 .slidezy-slide {
+    text-align: center;
+    padding: 50px;
     flex: 0 0 auto;
 }
+
 
 .slidezy-pre,
 .slidezy-next {

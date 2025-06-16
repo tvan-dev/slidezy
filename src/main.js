@@ -20,11 +20,17 @@ function Slidezy (selector, options ={}) {
     }, options)
 
     this.slides = Array.from(this.container.children)
-    this.currentIndex = this.opt.loop ? this.opt.items : 0;
-    this.realStep = this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
-    this.cloneItems = this.opt.items + this.opt.slideBy
+
+    this._cloneMock = this.opt.items + this.opt.slideBy;
+    
+    this.cloneItems = this._cloneMock > this.slides.length 
+                    ? this.slides.length 
+                    : this._cloneMock;
+
+    this.currentIndex = this.opt.loop ? this.cloneItems : 0;
+
     this.init()
-    this._updatePosition()
+    this._updatePosition(true);
 }
 
 Slidezy.prototype.init = function () {
@@ -59,19 +65,19 @@ Slidezy.prototype._createTrack = function () {
 
     if(this.opt.loop) {
         const slideHead = this.slides
-        .slice(-this.opt.items)
+        .slice(-this.cloneItems)
         .map(slide=> slide.cloneNode(true));
 
         const slideTail = this.slides
-            .slice(0,this.opt.items)
+            .slice(0,this.cloneItems)
             .map(slide=> slide.cloneNode(true));
 
         this.slides = slideHead.concat(this.slides.concat(slideTail));
-        console.log(this.slides.length);
+        console.log(`Slides length: ${this.slides.length}`);
     }
 
     this.slides.forEach(slide => {
-        slide.className = "slidezy-slide";
+        slide.classList.add("slidezy-slide") 
         slide.style.flexBasis = `calc(100% / ${this.opt.items})`;
         this.track.appendChild(slide);
     })
@@ -99,14 +105,14 @@ Slidezy.prototype._createControls = function () {
     }
 
 
-    this.preBtn.onclick = () => this.moveSlide(-this.realStep);
-    this.nextBtn.onclick = () => this.moveSlide(this.realStep);
+    this.preBtn.onclick = () => this.moveSlide(-this.opt.slideBy);
+    this.nextBtn.onclick = () => this.moveSlide(this.opt.slideBy);
 }
 Slidezy.prototype._autoPlay = function () {
     if(this.autoPlayTimer) return;
 
     this.autoPlayTimer = setInterval(() => {
-        this.moveSlide(this.realStep);
+        this.moveSlide(this.opt.slideBy);
     }, this.opt.autoPlayTimeOut);
 }
 Slidezy.prototype._stopAutoPlay = function () {
@@ -118,18 +124,22 @@ Slidezy.prototype.moveSlide = function (step) {
     this._isAnimating = true;
 
     const maxIndex = this.slides.length - this.opt.items;
+    console.log('maxIndex :>> ', maxIndex);
+    console.log('Math.max(this.currentIndex + step,0) :>> ', step);
     this.currentIndex = Math.min(Math.max(this.currentIndex + step,0),maxIndex);
-
+    console.log(`Current index: ${this.currentIndex}`);
     setTimeout(() => {                
             if(this.opt.loop) {
                 const slideCount = this._getSlideCount();
-            if(this.currentIndex < this.opt.items ) {
+            if(this.currentIndex < this.opt.items +  this.opt.slideBy ) {
                 this.currentIndex += slideCount
+                console.log(`Current index after loop: ${this.currentIndex}`);
                 this._updatePosition(true);
 
             }
-            else if(this.currentIndex > slideCount) {
+            else if(this.currentIndex >= slideCount + this.opt.slideBy) {
                 this.currentIndex -= slideCount
+                console.log(`Current index after loop2: ${this.currentIndex}`);
                 this._updatePosition(true);
             }
         }
@@ -140,18 +150,22 @@ Slidezy.prototype.moveSlide = function (step) {
     this._updatePosition();
 }
 Slidezy.prototype._getSlideCount = function () {
-     return this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+     return this.slides.length - (this.opt.loop ? this.cloneItems * 2 : 0);
 }
 Slidezy.prototype._updateNav = function () {
     let realIndex = this.currentIndex;
+    console.log(`currentIndex: ${this.currentIndex}`);
     if(this.opt.loop) {
-        const slideCount = this.slides.length - (this.opt.items * 2);
-        realIndex = (this.currentIndex - this.opt.items + slideCount) % slideCount;
+        const slideCount = this._getSlideCount()
+        realIndex = (this.currentIndex - this.opt.items - this.opt.slideBy + slideCount) % slideCount;
+        console.log('currentIndex after loop: ', this.currentIndex);
+        console.log(`realIndex: ${realIndex}`);
     }
     const pageIndex = Math.floor(realIndex / this.opt.items);
-    
+    console.log(`Page index: ${pageIndex}`);
     Array.from(this._dotsWrapper.children).forEach((dot, index) => {
         dot.classList.toggle("active", index === pageIndex);
+        ;
     })
     
 }
@@ -172,7 +186,6 @@ Slidezy.prototype._updatePosition = function (instant = false) {
 Slidezy.prototype._createNavigation = function () {
     this._dotsWrapper = document.createElement("div");
     this._dotsWrapper.className = "dots-wrapper";
-
     const countSlides = this._getSlideCount()
     const page = Math.ceil(countSlides / this.opt.items);
 
@@ -182,7 +195,8 @@ Slidezy.prototype._createNavigation = function () {
         if(i === 0) dot.classList.add("active");
 
         dot.onclick = () => {
-            this.currentIndex = i * this.opt.items + (this.opt.loop ? this.opt.items : 0);
+            this.currentIndex = i * this.opt.items + (this.opt.loop ? this.opt.items : 0) + this.opt.slideBy;
+
             this._updatePosition();
         }
         this._dotsWrapper.appendChild(dot);

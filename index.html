@@ -9,29 +9,46 @@
     <link rel="stylesheet" href="./assest/main.css">
 </head>
 <body>
-    <div id="my-slider">
-        <div>SLIDE 1</div>
-        <div>Slide 2</div>
-        <div>Slide 3</div>
-        <div>SLIDE 4</div>
-        <div>Slide 5</div>
-        <div>Slide 6</div>
-    </div>
-    <div id="my-navigation">
-        <button class="btn-previous">Prev</button>
-        <button class="btn-next">Next</button>
+    <header id="header">
+        <h1>SLIDEZY</h1>
+        <p>Simple and lightweight slider library</p>
+    </header>
+
+    <div id="my-slider" >
+
+        <div class="slide-1">
+            <h1>Blue Sky Donut</h1>
+            <p>Rich chocolate-flavored donut topped with a sweet glaze and colorful sprinkles, offering the perfect blend of softness and crunch in every bite</p>
+            <img src="./assest/imgages/blue-donut.png" alt="">
+        </div>
+
+        <div class="slide-2" >
+            <h1>Pink Strawberry Donut</h1>
+            <p>Delightful strawberry-flavored donut with a luscious pink glaze and a sprinkle of crushed strawberries, delivering a burst of fruity sweetness in every bite</p>
+            <img src="./assest/imgages/pink.png" alt="">
+        </div>
+        <div class="slide-3">
+            <h1>Chocolate Donut</h1>
+            <p>Decadent chocolate donut with a rich cocoa flavor, topped with a velvety chocolate glaze and a sprinkle of chocolate chips for an indulgent treat</p>
+            <img src="./assest/imgages/chocolate.png" alt="">
+        </div>
+        <div class="slide-4">
+            <h1>Blueberry Donut</h1>
+            <p>Delicious blueberry-flavored donut with a soft, fluffy texture, drizzled with a sweet blueberry glaze and topped with fresh blueberries for a burst of flavor</p>
+            <img src="./assest/imgages/blueberry.png" alt="">
+        </div>
     </div>
     <script src="./src/main.js"></script>
     <script>
         const mySlider = new Slidezy("#my-slider", {
-            items : 2,
+            items : 1,
             loop: true,
             speed: 300,
             navigation: true,
-            // autoPlay: true,
-            autoPlayTimeOut: 1000,
-            slideBy: 3,
+            autoPlay: true,
+            autoPlayTimeOut: 2000,
+            slideBy: 1,
         })
     </script>
 </body>
-</html>
+</html> 
